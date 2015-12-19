@@ -27,7 +27,7 @@ const GLdouble half_l = (GLdouble)(sqrt(25.0 + 49.0) * tan(40 * PI / 360));
 
 mallet self = mallet('b',table_x,table_y,0.15,0.1);
 mallet oppo = mallet('p',0,0,0.15,0.1);
-puck game = puck(0.1,0.1);
+puck game = puck(0.1,0.1,&self);
 
 void display();
 void init()
@@ -138,7 +138,7 @@ void display()
 	
 	drawPlayArea();
 	self.show();
-
+	game.show();
 	/*
 	glPushMatrix();
 	glTranslated(table_x,2,table_z);
@@ -147,6 +147,7 @@ void display()
 	*/
 	
 	glPopMatrix();
+	
 	glFlush();
 	glutSwapBuffers();
 }
@@ -167,7 +168,6 @@ void mouse(int x,int y)
 {
 	//printf("x,y:%d %d\n",x,y);
 	GLdouble t = half_l / 240.0;
-	cout << half_l << " " << t << endl;
 	GLdouble point_x = x * t - half_l;
 	GLdouble point_y = (half_l - y * t) * sin(atan(5.0 / 7.0));
 	GLdouble point_z = (y * t - half_l) * cos(atan(5.0 / 7.0));
@@ -186,6 +186,12 @@ void mouse(int x,int y)
 	glutPostRedisplay();
 }
 
+void idle()
+{
+	game.update(0.002);
+	glutPostRedisplay();
+}
+
 int main(int argc,char** argv)
 {
 	srand(time(0));
@@ -197,7 +203,7 @@ int main(int argc,char** argv)
 	glutDisplayFunc(display);
 	glutKeyboardFunc(keyboard);
 	glutPassiveMotionFunc(mouse);
+	glutIdleFunc(idle);
 	glutMainLoop();
-	
 	return 0;
 }

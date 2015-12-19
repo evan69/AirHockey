@@ -12,12 +12,16 @@ class mallet
 {
 public:
 	GLdouble x;
-	GLdouble y;
+	GLdouble z;
 	GLdouble r;
 	GLdouble h;
+	GLdouble px;
+	GLdouble pz;
+	GLdouble pr;
+	GLUquadricObj *objCylinder;
 	char color;
-	mallet(char _c,GLdouble _x,GLdouble _y,GLdouble _r,GLdouble _h);
-	void update(GLdouble _x,GLdouble _y);
+	mallet(char _c,GLdouble _x,GLdouble _z,GLdouble _r,GLdouble _h);
+	void update(GLdouble _x,GLdouble _z);
 	void show();
 };
 

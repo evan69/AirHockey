@@ -15,16 +15,17 @@ class puck
 {
 public:
 	GLdouble x;
-	GLdouble y;
+	GLdouble z;
 	GLdouble dir_x;
-	GLdouble dir_y;
+	GLdouble dir_z;
 	GLdouble r;
 	GLdouble h;
 	mallet* self;
 	mallet* oppo;
+	GLUquadricObj *objCylinder;
 	char color;
-	puck(GLdouble _r,GLdouble _h);
-	void update();
+	puck(GLdouble _r,GLdouble _h,mallet*);
+	void update(GLdouble step);
 	void show();
 };
 
