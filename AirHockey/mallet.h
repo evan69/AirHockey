@@ -5,8 +5,12 @@
 #include <gl/GLU.h>
 #include <gl/glut.h>
 
+#include "puck.h"
+
 #include <stdio.h>
 #include <stdlib.h>
+
+class puck;
 
 class mallet
 {
@@ -28,9 +32,11 @@ public:
 class AImallet : public mallet
 {
 public:
-	AImallet(char _c,GLdouble _x,GLdouble _z,GLdouble _r,GLdouble _h,GLdouble maxSpeed = 0.1);
+	AImallet(char _c,GLdouble _x,GLdouble _z,GLdouble _r,GLdouble _h,
+		puck* _info,GLdouble _maxSpeed = 0.0003);
+	puck* info;
 	GLdouble maxSpeed;
-	void controller();
+	void control();
 	void show();
 };
 

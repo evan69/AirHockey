@@ -1,14 +1,15 @@
 #include "puck.h"
 
-puck::puck(GLdouble _r,GLdouble _h,mallet* _self,mallet* _oppo)
+puck::puck(GLdouble _r,GLdouble _h,mallet* _self,mallet* _oppo,GLuint* _flag)
 {
 	x = 0;
-	z = 1;
+	z = 0;
 	r = _r;
 	h = _h;
+	flag = _flag;
 	rand();
-	dir_x = (GLdouble)rand() / 100.0;
-	dir_z = (GLdouble)rand() / 100.0;
+	dir_x = (GLdouble)(rand() % 100 - 50.0);
+	dir_z = (GLdouble)(rand() % 100 - 50.0);
 	GLdouble pr = (GLdouble)sqrt(double(dir_x * dir_x + dir_z * dir_z));
 	dir_x = dir_x / pr;
 	dir_z = dir_z / pr;
@@ -22,8 +23,26 @@ void puck::update(GLdouble step)
 {
 	x += step * dir_x;
 	z += step * dir_z;
-	if(x > 1.0 - r || x < - (1.0 - r)) dir_x = - dir_x;
-	if(z > 2.0 - r || z < - (2.0 - r)) dir_z = - dir_z; 
+	if(z > 2.0 - r && x < 0.4 && x > -0.4)
+	{
+		*flag = -1;
+		return;
+	}
+	if(z < - (2.0 - r) && x < 0.4 && x > -0.4)
+	{
+		*flag = 1;
+		return;
+	}
+	if(x > 1.0 - r || x < - (1.0 - r)) 
+	{
+		dir_x = - dir_x;
+		return;
+	}
+	if(z > 2.0 - r || z < - (2.0 - r)) 
+	{
+		dir_z = - dir_z;
+		return;
+	}
 	double l2 = (x - self->x) * (x - self->x) + (z - self->z) * (z - self->z);
 	if(l2 == 0.0) l2 = 0.000001;
 	if((GLdouble)l2 < (r + self->r) * (r + self->r))

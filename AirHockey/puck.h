@@ -11,6 +11,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+class mallet;
+
 class puck
 {
 public:
@@ -24,7 +26,8 @@ public:
 	mallet* oppo;
 	GLUquadricObj *objCylinder;
 	char color;
-	puck(GLdouble _r,GLdouble _h,mallet*,mallet*);
+	GLuint* flag;
+	puck(GLdouble _r,GLdouble _h,mallet*,mallet*,GLuint*);
 	void update(GLdouble step);
 	void show();
 };

@@ -21,13 +21,29 @@ const GLuint HEIGHT = 480;
 GLdouble alpha = 30.0;
 const GLdouble a_step = 6.0;
 const GLdouble a_max = 42.1;
-GLdouble table_x,table_y,table_z;
+GLdouble table_x = 1.0,table_y,table_z;
 const GLdouble PI = 3.1415926535897;
 const GLdouble half_l = (GLdouble)(sqrt(25.0 + 49.0) * tan(40 * PI / 360));
+GLuint flag = 0;//1-win -1-lose
 
-mallet self = mallet('b',table_x,table_y,0.15,0.1);
-mallet oppo = mallet('p',0,-1.7,0.15,0.1);
-puck game = puck(0.1,0.1,&self,&oppo);
+puck* game;
+mallet* self;
+AImallet* oppo;
+
+char win[] = "You Win";
+char los[] = "You Lose";
+
+void drawFlag()
+{
+    glRasterPos3f(-0.5,2.03,0);
+	glColor3d(1,0,0);
+    if (flag==-1)
+        for (int i=0;i<=7;++i)
+			glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, los[i]);
+    if (flag==1)
+        for (int i=0;i<=6;++i)
+            glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, win[i]);
+}
 
 void display();
 void init()
@@ -36,12 +52,28 @@ void init()
 	glClearColor(0.7,0.7,0.9,0);
 	glColor3d(0,0,0.5);
 	glViewport(0,0,WIDTH,HEIGHT);
-	/*
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	gluPerspective(45,1,0.01,100);
-	glMatrixMode(GL_MODELVIEW);
-	*/
+	GLfloat mat_ambient[] = {0.0, 0.0, 0.0, 1.0};
+    GLfloat mat_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat mat_specular[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat mat_shininess[] = {100.0};
+    GLfloat mat_position[] = {0, 0, 50, 1};
+    
+    glClearColor(1.0, 1.0, 1.0, 0.0);
+    glShadeModel(GL_SMOOTH);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess);
+    
+    glLightfv(GL_LIGHT0, GL_POSITION, mat_position);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, mat_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, mat_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, mat_specular);
+    
+    glEnable(GL_COLOR_MATERIAL);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_NORMALIZE);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 	display();
 }
 
@@ -81,7 +113,7 @@ void drawSourround()
 
 void drawWall()
 {
-	glColor3d(1,1,1);
+	glColor3d(0,1,1);
 	glPushMatrix();
 		glTranslated(1.05,2.05,0);
 		drawCube(0.05,0.05,2);
@@ -137,9 +169,10 @@ void display()
 	glRotated(alpha,0,1,0);
 	
 	drawPlayArea();
-	self.show();
-	oppo.show();
-	game.show();
+	self->show();
+	oppo->show();
+	game->show();
+	drawFlag();
 	/*
 	glPushMatrix();
 	glTranslated(table_x,2,table_z);
@@ -156,6 +189,14 @@ void display()
 void keyboard(unsigned char a,int x,int y)
 {
 	if(a == 27) exit(0);
+	if(flag != 0 && a == 13)
+	{
+		flag = 0;
+		//self = new mallet('b',table_x,table_y,0.15,0.1);
+		oppo = new AImallet('p',0,-1.5,0.15,0.1,game);
+		game = new puck(0.1,0.1,self,oppo,&flag);
+		oppo->info = game;
+	}
 	if(a == 'a' || a == 'A')
 		alpha += a_step;
 	if(a == 'd' || a == 'D')
@@ -183,19 +224,25 @@ void mouse(int x,int y)
 	if(table_x > 0.85) table_x = 0.85;
 	if(table_z < 0.15) table_z = 0.15;
 	if(table_z > 1.85) table_z = 1.85;
-	self.update(table_x,table_z);
+	self->update(table_x,table_z);
 	glutPostRedisplay();
 }
 
 void idle()
 {
-	game.update(0.002);
+	if(flag != 0) return;
+	oppo->control();
+	game->update(0.002);
 	glutPostRedisplay();
 }
 
 int main(int argc,char** argv)
 {
 	srand(time(0));
+	self = new mallet('b',table_x,table_y,0.15,0.1);
+	oppo = new AImallet('p',0,-1.5,0.15,0.1,game);
+	game = new puck(0.1,0.1,self,oppo,&flag);
+	oppo->info = game;
 	glutInit(&argc,argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowSize(WIDTH,HEIGHT);
