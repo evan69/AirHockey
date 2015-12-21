@@ -1,6 +1,6 @@
 #include "puck.h"
 
-puck::puck(GLdouble _r,GLdouble _h,mallet* _self)
+puck::puck(GLdouble _r,GLdouble _h,mallet* _self,mallet* _oppo)
 {
 	x = 0;
 	z = 1;
@@ -14,6 +14,8 @@ puck::puck(GLdouble _r,GLdouble _h,mallet* _self)
 	dir_z = dir_z / pr;
 	self = _self;
 	self->pr = r;
+	oppo = _oppo;
+	oppo->pr = r;
 }
 
 void puck::update(GLdouble step)
@@ -27,8 +29,9 @@ void puck::update(GLdouble step)
 	if((GLdouble)l2 < (r + self->r) * (r + self->r))
 	{
 		double theta = acos(((self->x - x) * dir_x + (self->z - z) * dir_z) / sqrt(l2));
-		double tot_x = (1.99 + 0.001 * (rand() % 20))* (self->z - z) * sin(theta) / sqrt(l2);
-		double tot_z = - (1.99 + 0.001 * (rand() % 20))* (self->x - x) * sin(theta) / sqrt(l2);
+		if(theta > 1.57) return;
+		double tot_x = 2.00 * (self->z - z) * sin(theta) / sqrt(l2);
+		double tot_z = - 2.00 * (self->x - x) * sin(theta) / sqrt(l2);
 		dir_x = tot_x - dir_x;
 		dir_z = tot_z - dir_z;
 		GLdouble pr = (GLdouble)sqrt(double(dir_x * dir_x + dir_z * dir_z));
@@ -37,6 +40,23 @@ void puck::update(GLdouble step)
 	}
 	self->px = x;
 	self->pz = z;
+
+	l2 = (x - oppo->x) * (x - oppo->x) + (z - oppo->z) * (z - oppo->z);
+	if(l2 == 0.0) l2 = 0.000001;
+	if((GLdouble)l2 < (r + oppo->r) * (r + oppo->r))
+	{
+		double theta = acos(((oppo->x - x) * dir_x + (oppo->z - z) * dir_z) / sqrt(l2));
+		if(theta > 1.57) return;
+		double tot_x = 2.00 * (oppo->z - z) * sin(theta) / sqrt(l2);
+		double tot_z = - 2.00 * (oppo->x - x) * sin(theta) / sqrt(l2);
+		dir_x = tot_x - dir_x;
+		dir_z = tot_z - dir_z;
+		GLdouble pr = (GLdouble)sqrt(double(dir_x * dir_x + dir_z * dir_z));
+		dir_x = dir_x / pr;
+		dir_z = dir_z / pr;
+	}
+	oppo->px = x;
+	oppo->pz = z;
 }
 
 void puck::show()

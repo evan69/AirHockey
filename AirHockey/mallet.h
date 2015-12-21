@@ -25,4 +25,13 @@ public:
 	void show();
 };
 
+class AImallet : public mallet
+{
+public:
+	AImallet(char _c,GLdouble _x,GLdouble _z,GLdouble _r,GLdouble _h,GLdouble maxSpeed = 0.1);
+	GLdouble maxSpeed;
+	void controller();
+	void show();
+};
+
 #endif

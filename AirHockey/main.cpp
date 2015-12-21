@@ -26,8 +26,8 @@ const GLdouble PI = 3.1415926535897;
 const GLdouble half_l = (GLdouble)(sqrt(25.0 + 49.0) * tan(40 * PI / 360));
 
 mallet self = mallet('b',table_x,table_y,0.15,0.1);
-mallet oppo = mallet('p',0,0,0.15,0.1);
-puck game = puck(0.1,0.1,&self);
+mallet oppo = mallet('p',0,-1.7,0.15,0.1);
+puck game = puck(0.1,0.1,&self,&oppo);
 
 void display();
 void init()
@@ -138,6 +138,7 @@ void display()
 	
 	drawPlayArea();
 	self.show();
+	oppo.show();
 	game.show();
 	/*
 	glPushMatrix();

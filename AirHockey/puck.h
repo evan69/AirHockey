@@ -24,7 +24,7 @@ public:
 	mallet* oppo;
 	GLUquadricObj *objCylinder;
 	char color;
-	puck(GLdouble _r,GLdouble _h,mallet*);
+	puck(GLdouble _r,GLdouble _h,mallet*,mallet*);
 	void update(GLdouble step);
 	void show();
 };
