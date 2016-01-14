@@ -1,4 +1,5 @@
 #include "puck.h"
+#include <stdio.h>
 
 puck::puck(GLdouble _r,GLdouble _h,mallet* _self,mallet* _oppo,GLuint* _flag)
 {
@@ -13,13 +14,15 @@ puck::puck(GLdouble _r,GLdouble _h,mallet* _self,mallet* _oppo,GLuint* _flag)
 	GLdouble pr = (GLdouble)sqrt(double(dir_x * dir_x + dir_z * dir_z));
 	dir_x = dir_x / pr;
 	dir_z = dir_z / pr;
+	//初始时，随机生成单位的运动方向向量
 	self = _self;
 	self->pr = r;
 	oppo = _oppo;
 	oppo->pr = r;
 }
 
-void puck::update(GLdouble step)
+
+void puck::update(GLdouble step)//处理运动和各种碰撞事件
 {
 	x += step * dir_x;
 	z += step * dir_z;
@@ -35,13 +38,11 @@ void puck::update(GLdouble step)
 	}
 	if(x > 1.0 - r || x < - (1.0 - r)) 
 	{
-		dir_x = - dir_x;
-		return;
+		dir_x = - abs(dir_x) * (x/abs(x));
 	}
-	if(z > 2.0 - r || z < - (2.0 - r)) 
+	if(z > 2.0 - r || z < - (2.0 - r))
 	{
-		dir_z = - dir_z;
-		return;
+		dir_z = - abs(dir_z) * (z/abs(z));
 	}
 	double l2 = (x - self->x) * (x - self->x) + (z - self->z) * (z - self->z);
 	if(l2 == 0.0) l2 = 0.000001;
@@ -78,12 +79,13 @@ void puck::update(GLdouble step)
 	oppo->pz = z;
 }
 
-void puck::show()
+void puck::show()//绘制这个puck
 {
 	objCylinder = gluNewQuadric();
 	glMatrixMode(GL_MODELVIEW);
 	glColor3d(1,0,0);
 	glPushMatrix();
+		glNormal3d(0, 1, 0);
 		glTranslated(x,2.05,z);
 		glRotated(90,1,0,0);
 		gluCylinder(objCylinder, r, r, 0.1, 30, 5);
