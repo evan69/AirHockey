@@ -92,7 +92,7 @@ LoadDIBitmap( char *filename, /* I - File to load */
         return (NULL);
     }
 
-    if (fread(*info, 1, infosize, fp) < infosize)  {
+    if (fread(*info, 1, infosize, fp) < (unsigned int)infosize)  {
         errmess("Couldn't read the bitmap header", filename);
         free(*info);   fclose(fp);   return (NULL);
     }
@@ -110,7 +110,7 @@ LoadDIBitmap( char *filename, /* I - File to load */
         return (NULL);
     }
 
-    if (fread(bits, 1, bitsize, fp) < bitsize)  {
+    if (fread(bits, 1, bitsize, fp) < (unsigned int)bitsize)  {
         free(*info);   free(bits);   fclose(fp);   
         errmess("Couldn't read bitmap", filename);
         return (NULL);
